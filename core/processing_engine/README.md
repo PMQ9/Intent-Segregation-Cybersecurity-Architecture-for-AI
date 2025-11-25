@@ -1,6 +1,6 @@
-# Processing Engine Module
+# The Oathbound Cognitor (Processing Engine Module)
 
-The Processing Engine is the core execution layer of the Intent Segregation Architecture. It ensures that all AI operations are performed through type-safe function calls rather than raw prompts, preventing prompt injection attacks and ensuring auditability.
+The Oathbound Cognitor is the core execution layer of Ordo Maledictum Promptorum. It ensures that all AI operations are performed through type-safe function calls rather than raw prompts, preventing prompt injection attacks and ensuring auditability.
 
 ## Overview
 

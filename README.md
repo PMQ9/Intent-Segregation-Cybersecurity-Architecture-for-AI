@@ -1,5 +1,8 @@
-# Intent-Segregation-Cybersecurity-Architecture-for-AI
-Researching a system for preventing prompt injection by separating user intent from user content
+# Ordo Maledictum Promptorum
+
+<img width="75%" alt="Ordo Maledictum Promptorum" src="docs/images/project_title.png" />
+
+Researching a system for preventing prompt injection by separating user intent from user content. This system treats all user inputs as potentially corrupted and uses a multi-layered defense strategy with sacrificial AI sentries and consensus voting.
 
 ## 1. Overview
 This project implements an intent-first, schema-driven security architecture designed to mitigate prompt injection and unsafe LLM actions. The system separates:
@@ -8,13 +11,14 @@ This project implements an intent-first, schema-driven security architecture des
 
 The architecture uses:
 
-- Independent intent parsers
+- Sacrificial AI sentries (The Penitent Cogitators) for input health checking
+- Independent intent parsers (The Council of the Oracular Cogitors)
 - A voting-based intent validator
-- An intent comparator
+- An intent comparator (The Judicator of Concordance)
 - A trusted intent generator
 - A processing engine that accepts only typed, structured intents
-- An intent ledger for auditing
-- Optional human approval for elevated-risk actions
+- An immutable audit ledger (The Chronicle of Allowed Thought)
+- Optional human approval (The Overseer-Prime) for elevated-risk actions
 
 This design is especially suitable for narrow, well-defined AI applications, such as B2B consulting automation, customer support tools, or workflow agents.
 
@@ -22,21 +26,27 @@ This design is especially suitable for narrow, well-defined AI applications, suc
 ```
 User Input
    │
-   ├──► Malicious Input Detector (Might Implement)
+   ├──► Malicious Input Detector
    │
-   ├──► Parser Ensemble (P1, P2, P3...)
+   ├──► Vault of the Forbidden Cant
+   │         │
+   │         ├──► The Penitent Cogitators (3 Sacrificial AI Models)
+   │         │
+   │         └──► The Lexicanum Diagnostica (Health Monitor)
+   │
+   ├──► Council of the Oracular Cogitors (P1, P2, P3...)
    │         │
    │         └──► Voting Module
    │
-   ├──► Intent Comparator ◄── Provider Config
+   ├──► The Judicator of Concordance ◄── The Edict of the High Magister
    │
-   ├─── if mismatch → Elevated Privilege Request → Human Approval
+   ├─── if mismatch → Elevated Privilege Request → The Overseer-Prime
    │
    ├──► Trusted Intent Generator
    │
    ├──► Processing Engine
    │         │
-   │         └──► Intent Ledger
+   │         └──► The Chronicle of Allowed Thought (Immutable Ledger)
    │
    └──► Response
 ```
@@ -52,18 +62,29 @@ Purpose: Quickly reject obviously harmful or malformed inputs before deeper proc
 Implementation:
 - Light syntactic checks (regex-based).
 - Block commands like rm -rf /, cloud resource manipulation, SQL injection patterns, etc.
-- ML classifier (optional) to flag “attack-like” inputs.
+- ML classifier (optional) to flag "attack-like" inputs.
 
-Output: either “clean” or “blocked”.
+Output: either "clean" or "blocked".
 
-### 3.2 Intent Parser Ensemble
+### 3.2 Vault of the Forbidden Cant (Sacrificial Input Testing)
+
+Purpose: Treat all inputs as potentially corrupted and test them on isolated AI sentries before proceeding.
+
+Implementation:
+- **The Penitent Cogitators**: 3 independent sacrificial LLM instances in an isolated sandbox
+- **The Lexicanum Diagnostica**: Health monitoring system that probes the sacrificial models without touching them directly
+- Models are tested with the user input to detect signs of corruption or attack patterns
+- If models fail health checks, input is quarantined and escalated
+
+Output: "safe" or "corrupted" determination.
+
+### 3.3 Council of the Oracular Cogitors (Intent Parser Ensemble)
 
 Several independent modules parse free-form user text into a structured intent JSON.
 
 Parsers:
 
 1. Deterministic Parser
-
   - Rule-based mapping for actions.
   - Keyword → enum resolution.
   - Zero hallucination; highest trust.
@@ -74,9 +95,10 @@ Parsers:
 3. LLM Parser #2
   - Same schema, but different model or system prompt.
   - Increases independence.
+
 Output: structured JSON for each parser.
 
-### 3.3 Voting Module
+### 3.4 Voting Module
 
 Compares outputs from all parsers.
 
@@ -88,15 +110,15 @@ Logic:
 
 Output: canonical parsed intent.
 
-### 3.4 Intent Comparator
+### 3.5 The Judicator of Concordance (Intent Comparator)
 
 Compares:
 
 - Parsed user intent vs
-- Provider-defined allowed intents (capability config)
+- The Edict of the High Magister (provider-defined allowed intents and capability config)
 
 ```
-Provider Config Example:
+The Edict of the High Magister Example:
 
 {
   "allowed_actions": ["find_experts", "summarize", "draft_proposal"],
@@ -105,7 +127,7 @@ Provider Config Example:
 }
 ```
 
-Comparator checks:
+The Judicator checks:
 
 - action is allowed (enum)
 - expertise subset is allowed
@@ -118,7 +140,7 @@ Decision:
 - soft mismatch → require confirmation
 - hard mismatch → block or escalate
 
-### 3.5 Trusted Intent Generator
+### 3.6 Trusted Intent Generator
 
 Produces a canonical, sanitized, and signed JSON object.
 
@@ -140,7 +162,7 @@ Example output:
 }
 ```
 
-### 3.6 Processing Engine
+### 3.7 Processing Engine (The Oathbound Cognitor)
 
 Executes trusted intents via function calls—not raw prompts.
 
@@ -148,14 +170,14 @@ Implementation Requirements:
 
 - All operations are typed.
 - Processing agents must consume only trusted intents.
-- No “free-form LLM” call can execute privileged actions.
+- No "free-form LLM" call can execute privileged actions.
 
 Example callable:
 ```
 get_experts({ topic_id, expertise, max_budget })
 ```
 
-### 3.7 Intent Ledger
+### 3.8 The Chronicle of Allowed Thought (Intent Ledger)
 
 Append-only log storing:
 - User input
@@ -174,7 +196,7 @@ Great for:
 - Explaining decisions
 - Research evaluation
 
-### 3.8 Human Supervision Module
+### 3.9 The Overseer-Prime (Human Supervision Module)
 
 Triggered when:
 - Intent mismatch
@@ -182,7 +204,7 @@ Triggered when:
 - High-risk actions
 - Unusual parameter patterns
 
-Human gets a UI showing:
+The Overseer-Prime receives:
 - Raw user input
 - Parsed JSON intents
 - Diffs

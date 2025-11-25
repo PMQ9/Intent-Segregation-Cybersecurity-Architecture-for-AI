@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Intent Segregation Cybersecurity Architecture - A Rust-based security system designed to prevent prompt injection attacks by separating user intent from user content. The system uses multiple independent parsers with consensus voting to validate intents before execution.
+Ordo Maledictum Promptorum - A Rust-based security system designed to prevent prompt injection attacks by separating user intent from user content. The system treats all inputs as potentially corrupted, tests them using sacrificial AI sentries (The Penitent Cogitators), and uses multiple independent parsers with consensus voting to validate intents before execution.
 
-**Core Security Principle**: Never allow unvalidated user content to directly influence system behavior. All user inputs are parsed into structured intents, validated through multiple layers, and executed via typed function calls only.
+**Core Security Principle**: Never allow unvalidated user content to directly influence system behavior. All user inputs are treated with zero trust, tested on isolated models, parsed into structured intents, validated through multiple layers, and executed via typed function calls only.
 
 ## Change Documentation
 
@@ -147,35 +147,41 @@ All user inputs follow this sequential validation pipeline:
 
 1. **Malicious Detection** (`core/malicious_detector/`) - Fast regex-based checks for SQL injection, command injection, XSS, path traversal
 
-2. **Parser Ensemble** (`core/parsers/`) - Multiple independent parsers extract structured intent:
+2. **Vault of the Forbidden Cant** - Zero-trust input testing on isolated models:
+   - **The Penitent Cogitators**: 3 sacrificial LLM instances in sandbox
+   - **The Lexicanum Diagnostica**: Health monitoring without direct contact
+   - Tests input for signs of corruption/attacks
+   - If health checks fail: Quarantine and escalate
+
+3. **The Council of the Oracular Cogitors** (`core/parsers/`) - Multiple independent parsers extract structured intent:
    - `DeterministicParser`: Rule-based, zero hallucination (trust: 1.0)
    - `OllamaParser`: Local LLM (trust: 0.75)
    - `OpenAIParser`: Cloud LLM (trust: 0.8)
 
-3. **Voting Module** (`core/voting/`) - Compare parser outputs, select canonical intent:
+4. **Voting Module** (`core/voting/`) - Compare parser outputs, select canonical intent:
    - High Confidence (≥95% similarity): Auto-approve
    - Low Confidence (75-95%): Use deterministic fallback
    - Conflict (<75%): Escalate to human
 
-4. **Intent Comparator** (`core/comparator/`) - Validate against provider policies:
+5. **The Judicator of Concordance** (`core/comparator/`) - Validate against provider policies (The Edict of the High Magister):
    - Check action is in `allowed_actions`
    - Validate expertise areas
    - Enforce budget/parameter constraints
 
-5. **Supervision** (`core/supervision/`) - If needed, create human approval request:
+6. **The Overseer-Prime** (`core/supervision/`) - If needed, create human approval request:
    - Store in `approval_requests` table
    - Notify admins via email/Slack
    - Wait for decision
 
-6. **Intent Generator** (`core/intent_generator/`) - Create signed, trusted intent object
+7. **Trusted Intent Generator** (`core/intent_generator/`) - Create signed, trusted intent object
 
-7. **Processing Engine** (`core/processing_engine/`) - Execute via typed functions (NOT free-form LLM):
+8. **The Oathbound Cognitor** (`core/processing_engine/`) - Execute via typed functions (NOT free-form LLM):
    - `find_experts()`
    - `summarize()`
    - `draft_proposal()`
    - All operations logged to ledger
 
-8. **Ledger** (`core/ledger/`) - Write immutable audit entry with full pipeline data
+9. **The Chronicle of Allowed Thought** (`core/ledger/`) - Write immutable audit entry with full pipeline data
 
 ### Database Schema
 

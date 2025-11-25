@@ -1,10 +1,10 @@
-# Intent Ledger
+# The Chronicle of Allowed Thought (Intent Ledger)
 
-An append-only, immutable ledger for tracking all intent processing flows in the Intent Segregation Cybersecurity Architecture.
+An append-only, immutable ledger for tracking all intent processing flows in Ordo Maledictum Promptorum.
 
 ## Overview
 
-The Intent Ledger is a PostgreSQL-backed audit trail that stores complete records of every request processed through the system. Once written, entries cannot be modified or deleted, ensuring a complete and tamper-proof audit history.
+The Chronicle of Allowed Thought is a PostgreSQL-backed audit trail that stores complete records of every request processed through the system. Once written, entries cannot be modified or deleted, ensuring a complete and tamper-proof audit history.
 
 ## Features
 

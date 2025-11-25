@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Project Renamed**: "Intent Segregation Cybersecurity Architecture" → "Ordo Maledictum Promptorum"
+  - Updated all documentation files (README.md, CLAUDE.md, ARCHITECTURE.md)
+  - Updated Cargo.toml workspace authors
+  - New project name reflects the zero-trust, sacrificial-model approach to input validation
+
+- **Architecture Refactored with New Layers**: Enhanced resilience to prompt injection
+  - Added STAGE 2: **Vault of the Forbidden Cant** - Sacrificial AI testing layer
+    - **The Penitent Cogitators**: 3 isolated LLM instances for input probing
+    - **The Lexicanum Diagnostica**: Health monitoring system for sacrificial models
+    - Zero-trust approach treats all inputs as potentially corrupted
+
+  - Renamed Core Components to reflect new architecture:
+    - Intent Parsers → **The Council of the Oracular Cogitors** (STAGE 3)
+    - Intent Comparator → **The Judicator of Concordance** (STAGE 5)
+    - Provider Config → **The Edict of the High Magister**
+    - Human Approval → **The Overseer-Prime** (STAGE 6)
+    - Processing Engine → **The Oathbound Cognitor** (STAGE 8)
+    - Intent Ledger → **The Chronicle of Allowed Thought** (STAGE 9)
+
+  - Updated all documentation diagrams from 8-stage to 10-stage pipeline
+  - Security pipeline now: Malicious Detection → Sacrificial Testing → Parser Ensemble → Voting → Comparator → Human Review → Intent Generator → Processing → Ledger
+
 ### Added
 - **Formal Security Analysis** (docs/FORMAL_SECURITY_ANALYSIS.md)
   - Formalized threat model using STRIDE framework, attack trees, and OWASP LLM Top 10

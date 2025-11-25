@@ -1,6 +1,6 @@
-# Intent Parsers Module
+# The Council of the Oracular Cogitors (Intent Parsers Module)
 
-This module provides an ensemble of intent parsers for extracting structured intents from user input. The ensemble includes:
+This module provides an ensemble of intent parsers (The Council of the Oracular Cogitors) for extracting structured intents from user input. The ensemble includes:
 
 1. **DeterministicParser** - Rule-based, zero-hallucination parser
 2. **OllamaParser** - Local LLM parser using Ollama

@@ -1,6 +1,6 @@
-# Intent Comparator
+# The Judicator of Concordance (Intent Comparator)
 
-The Intent Comparator module validates user intents against provider-defined policies and constraints. It ensures that requested actions, expertise areas, and resource constraints fall within allowed boundaries.
+The Judicator of Concordance module validates user intents against provider-defined policies (The Edict of the High Magister) and constraints. It ensures that requested actions, expertise areas, and resource constraints fall within allowed boundaries.
 
 ## Features
 
@@ -297,15 +297,15 @@ Each result includes:
 
 ## Integration
 
-The comparator integrates seamlessly with the Intent Segregation Architecture:
+The Judicator of Concordance integrates seamlessly with Ordo Maledictum Promptorum architecture:
 
 ```
-User Input → Parser Ensemble → Voting Module → Intent Comparator → Trusted Intent Generator
-                                                         ↓
-                                                  Provider Config
+User Input → Sacrificial Testing → Council of the Oracular Cogitors → Voting Module → The Judicator of Concordance → Trusted Intent Generator
+                                                                                                  ↓
+                                                                              The Edict of the High Magister
 ```
 
-The comparator sits between the voting module and the trusted intent generator, ensuring only validated intents proceed to execution.
+The Judicator sits between the voting module and the trusted intent generator, ensuring only validated intents proceed to execution. When policies are violated, approval from The Overseer-Prime is required.
 
 ## Testing
 

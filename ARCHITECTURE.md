@@ -1,4 +1,4 @@
-# Intent Segregation Cybersecurity Architecture - Technical Documentation
+# Ordo Maledictum Promptorum - Technical Documentation
 
 ## Table of Contents
 
@@ -16,19 +16,25 @@
 
 ## System Overview
 
-The Intent Segregation Cybersecurity Architecture is a defense-in-depth system designed to prevent prompt injection attacks and unauthorized LLM actions by separating user intent from user content.
+Ordo Maledictum Promptorum is a defense-in-depth system designed to prevent prompt injection attacks and unauthorized LLM actions by separating user intent from user content. The architecture treats all inputs as potentially corrupted and uses sacrificial AI sentries to probe for corruption before processing.
 
-### Core Principle
+### Core Principles
 
-**Intent Segregation**: Never allow unvalidated user content to directly influence system behavior. Instead:
+**Intent Segregation**: Never allow unvalidated user content to directly influence system behavior.
 
-1. **Parse** user input into structured intent using multiple independent parsers
-2. **Validate** intent through consensus voting
-3. **Compare** against strict provider policies
-4. **Approve** via human review when necessary
-5. **Generate** a trusted, canonical intent object
-6. **Execute** through typed function calls (not free-form LLM prompts)
-7. **Audit** every step immutably
+**Zero-Trust Input Processing**: Treat all inputs as potentially corrupted by default. Test them on isolated models (The Penitent Cogitators) before proceeding.
+
+**Multi-Layer Validation**: Instead:
+
+1. **Test** input on sacrificial models (The Penitent Cogitators in the Vault of the Forbidden Cant)
+2. **Detect** malicious patterns via regex-based analysis
+3. **Parse** user input into structured intent using multiple independent parsers (The Council of the Oracular Cogitors)
+4. **Validate** intent through consensus voting
+5. **Compare** against strict provider policies (The Judicator of Concordance checks The Edict of the High Magister)
+6. **Approve** via human review when necessary (The Overseer-Prime)
+7. **Generate** a trusted, canonical intent object
+8. **Execute** through typed function calls (not free-form LLM prompts via The Oathbound Cognitor)
+9. **Audit** every step immutably (The Chronicle of Allowed Thought)
 
 ### Design Goals
 
@@ -76,7 +82,7 @@ The following diagram shows the **actual code implementation** as verified by so
                                       │
                                       ▼
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃                          SECURITY PIPELINE (8 STAGES)                              ┃
+┃                         SECURITY PIPELINE (10 STAGES)                              ┃
 ┃                    (Implemented in: handlers/process.rs)                           ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
@@ -104,7 +110,37 @@ The following diagram shows the **actual code implementation** as verified by so
 │ └──────────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────────────┐
-│ STAGE 2: PARSER ENSEMBLE (Multi-Parser Parallel Execution)                         │
+│ STAGE 2: VAULT OF THE FORBIDDEN CANT (Sacrificial Input Testing)                   │
+│ ├─ Purpose: Zero-trust testing on isolated AI sentries                             │
+│ ├─ Strategy: Probe with sacrificial models without main system contact             │
+│ │                                                                                   │
+│ │  ┌─────────────────────────────────────────────────────────────────┐            │
+│ │  │  The Penitent Cogitators (3 Sacrificial LLM Instances)          │            │
+│ │  │  ─────────────────────────────────────────────────────────────  │            │
+│ │  │  • Model 1: Test input parsing for corruption patterns          │            │
+│ │  │  • Model 2: Test input encoding/decoding attacks               │            │
+│ │  │  • Model 3: Test input semantic confusion attempts             │            │
+│ │  │                                                                   │            │
+│ │  │  All running in isolated sandbox (Vault of the Forbidden Cant)  │            │
+│ │  └─────────────────────────────────────────────────────────────────┘            │
+│ │                                                                                   │
+│ │  ┌─────────────────────────────────────────────────────────────────┐            │
+│ │  │  The Lexicanum Diagnostica (Health Monitoring)                  │            │
+│ │  │  ─────────────────────────────────────────────────────────────  │            │
+│ │  │  • Observes sacrificial models WITHOUT direct contact           │            │
+│ │  │  • Measures: Response time, entropy changes, error patterns     │            │
+│ │  │  • Takes vital signs to detect corruption                       │            │
+│ │  │  • Routes to main system only if models pass health checks      │            │
+│ │  └─────────────────────────────────────────────────────────────────┘            │
+│ │                                                                                   │
+│ │  Flow:                                                                            │
+│ │  input ──▶ [Penitent Cogitators] ──▶ [Lexicanum Diagnostica] ──▶ SAFE/CORRUPTED │
+│ │                                                                                   │
+│ │  Security Guarantee: Poisoned inputs never touch production parsers             │
+│ └──────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│ STAGE 3: COUNCIL OF THE ORACULAR COGITORS (Multi-Parser Parallel Execution)                         │
 │ ├─ Module: core/parsers/src/ensemble.rs                                            │
 │ ├─ Type: Async parallel execution (tokio::spawn per parser)                        │
 │ ├─ Parsers are ISOLATED: No shared state, independent processes                    │
@@ -145,7 +181,7 @@ The following diagram shows the **actual code implementation** as verified by so
 │ └──────────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────────────┐
-│ STAGE 3: VOTING MODULE (Consensus Mechanism)                                       │
+│ STAGE 4: VOTING MODULE (Consensus Mechanism)                                       │
 │ ├─ Module: core/voting/src/lib.rs                                                  │
 │ ├─ Purpose: Compare parser outputs, detect conflicts, select canonical intent      │
 │ │                                                                                   │
@@ -187,11 +223,11 @@ The following diagram shows the **actual code implementation** as verified by so
 ╚═════════════════════════════════════════════════════════════════════════════════════╝
 
 ┌─────────────────────────────────────────────────────────────────────────────────────┐
-│ STAGE 4: INTENT COMPARATOR (Policy Enforcement)                                    │
+│ STAGE 5: THE JUDICATOR OF CONCORDANCE (Policy Enforcement)                         │
 │ ├─ Module: core/comparator/src/lib.rs                                              │
-│ ├─ Purpose: Validate intent against provider configuration (security policies)     │
+│ ├─ Purpose: Validate intent against The Edict of the High Magister (security policies) │
 │ │                                                                                   │
-│ │  Input: canonical_intent (from voting), ProviderConfig                          │
+│ │  Input: canonical_intent (from voting), The Edict of the High Magister (Config)                          │
 │ │                                                                                   │
 │ │  ┌────────────────────────────────────────────────────────────┐                 │
 │ │  │  Policy Checks (comparator.compare())                      │                 │
@@ -226,7 +262,7 @@ The following diagram shows the **actual code implementation** as verified by so
 │ └──────────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────────────┐
-│ STAGE 5: HUMAN APPROVAL WORKFLOW (Supervision)                                     │
+│ STAGE 6: THE OVERSEER-PRIME (Human Approval Workflow)                                     │
 │ ├─ Module: core/supervision/src/lib.rs                                             │
 │ ├─ Triggered When:                                                                  │
 │ │   • voting_result.requires_human_review == true  (parser conflict)              │
@@ -269,7 +305,7 @@ The following diagram shows the **actual code implementation** as verified by so
 │ └──────────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────────────┐
-│ STAGE 6: TRUSTED INTENT GENERATION (Sanitization & Normalization)                  │
+│ STAGE 7: TRUSTED INTENT GENERATION (Sanitization & Normalization)                  │
 │ ├─ Module: core/intent_generator/src/lib.rs                                        │
 │ ├─ Purpose: Remove ALL raw user content, create immutable trusted intent           │
 │ │                                                                                   │
@@ -331,7 +367,7 @@ The following diagram shows the **actual code implementation** as verified by so
 ╚═════════════════════════════════════════════════════════════════════════════════════╝
 
 ┌─────────────────────────────────────────────────────────────────────────────────────┐
-│ STAGE 7: PROCESSING ENGINE (Typed Execution Only)                                  │
+│ STAGE 8: THE OATHBOUND COGNITOR (Typed Execution Only)                                  │
 │ ├─ Module: core/processing_engine/src/lib.rs                                       │
 │ ├─ Purpose: Execute intents via typed function calls, NO free-form LLM prompts     │
 │ │                                                                                   │
@@ -391,7 +427,7 @@ The following diagram shows the **actual code implementation** as verified by so
 │ └──────────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────────────┐
-│ STAGE 8: IMMUTABLE LEDGER (Append-Only Audit Log)                                  │
+│ STAGE 9: THE CHRONICLE OF ALLOWED THOUGHT (Immutable Audit Log)                                  │
 │ ├─ Module: core/ledger/src/lib.rs                                                  │
 │ ├─ Storage: PostgreSQL with immutability rules                                     │
 │ │                                                                                   │
