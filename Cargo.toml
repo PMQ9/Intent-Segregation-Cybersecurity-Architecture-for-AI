@@ -3,6 +3,7 @@ resolver = "2"
 members = [
     "core/schema",
     "core/malicious_detector",
+    "core/penitent_cogitators",
     "core/parsers",
     "core/voting",
     "core/comparator",

@@ -9,7 +9,9 @@
       "Bash(done)",
       "Bash(cat:*)",
       "Bash(find core -name \"examples\" -type d -exec bash -c 'echo \"\"=== {} ===\"\" && ls {}' ;)",
-      "Bash(cargo build:*)"
+      "Bash(cargo build:*)",
+      "Bash(tree:*)",
+      "Bash(cargo check:*)"
     ],
     "deny": [],
     "ask": []

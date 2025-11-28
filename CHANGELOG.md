@@ -55,6 +55,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - All parsers load API keys from environment variables (CHATGPT_API_KEY, DEEPSEEK_API_KEY, CLAUDE_API_KEY)
   - Default models configurable via environment variables (CHATGPT_MODEL, DEEPSEEK_MODEL, CLAUDE_MODEL)
 
+- **Penitent Cogitators - Sacrificial LLM Sentries** (core/penitent_cogitators/)
+  - New module implementing lightweight, fast, cost-efficient LLM-based input corruption detection
+  - Three independent sacrificial sentries:
+    - **ChatGPT Sentry** (`chatgpt.rs`): Uses OpenAI gpt-3.5-turbo ($0.0005 per 1K input tokens)
+    - **DeepSeek Sentry** (`deepseek.rs`): Uses DeepSeek chat model (extremely cost-efficient)
+    - **Claude Sentry** (`claude.rs`): Uses Anthropic claude-3-5-haiku (lightweight, fast)
+  - Parallel testing infrastructure: All three run concurrently for consensus-based threat detection
+  - Lightweight design: 10-second timeouts, max 500 tokens, deterministic (temperature=0)
+  - Detection focuses on attack patterns: prompt injection, SQL injection, command injection, path traversal, XSS, jailbreaks, semantic manipulation
+  - Consensus modes: Any-suspicious (default) or require-consensus (configurable)
+  - Risk scoring (0.0-1.0): Individual scores + consensus average
+  - Graceful degradation: Failures in any cogitator don't block pipeline
+  - Environment configuration: Enable/disable per sentry, API keys from environment
+  - Full integration with malicious detector module for early-stage input validation
+
 - **Formal Security Analysis** (docs/FORMAL_SECURITY_ANALYSIS.md)
   - Formalized threat model using STRIDE framework, attack trees, and OWASP LLM Top 10
   - Trust boundary analysis and adversary modeling
