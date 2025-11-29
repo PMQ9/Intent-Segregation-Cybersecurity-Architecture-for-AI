@@ -11,15 +11,30 @@
 pub mod direct_injection;
 
 // Phase 2: Indirect Injection Attacks
-// pub mod indirect_injection;
+pub mod indirect_injection;
 
 // Phase 3: Jailbreak Attacks
-// pub mod jailbreaks;
+pub mod jailbreaks;
 
 // Phase 4: Consensus-Breaking Attacks
-// pub mod consensus_breaking;
+pub mod consensus_breaking;
 
 // Phase 5: Adaptive Attacks
 // pub mod adaptive;
 
 pub use direct_injection::{AttackPayload, AttackResult};
+pub use indirect_injection::{
+    IndirectAttackPayload, IndirectAttackResult,
+    WebsiteInjectionAttack, EmailInjectionAttack,
+    AgentInjectionAttack, MultimodalAttack
+};
+pub use jailbreaks::{
+    JailbreakPayload, JailbreakResult,
+    RoleplayAttack, MultiTurnAttack,
+    WeakToStrongAttack, ObfuscationAttack
+};
+pub use consensus_breaking::{
+    ConsensusAttackPayload, ConsensusAttackResult,
+    ParserSpecificAttack, ParserVariant,
+    VotingBypassAttack
+};
