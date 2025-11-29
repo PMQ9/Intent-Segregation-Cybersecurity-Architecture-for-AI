@@ -8,6 +8,12 @@ Ordo Maledictum Promptorum - A Rust-based security system designed to prevent pr
 
 **Core Security Principle**: Never allow unvalidated user content to directly influence system behavior. All user inputs are treated with zero trust, tested on isolated models, parsed into structured intents, validated through multiple layers, and executed via typed function calls only.
 
+## Important Guidelines
+
+**NEVER use emojis** - All documentation and code comments should be free of emoji characters. This keeps the codebase clean and professional.
+
+**NEVER create documentation files unless requested** - Do not proactively create .md, .txt, or other documentation files. Only create documentation files if explicitly requested by the user. This keeps the repository clean and focused. Always prefer editing existing files instead of creating new ones.
+
 ## Change Documentation
 
 **IMPORTANT - Review Before Committing**: Always review all changes before committing. Changes should be staged, reviewed for correctness, and verified to compile/test before being committed to the repository.
