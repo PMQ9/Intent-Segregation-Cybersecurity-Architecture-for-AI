@@ -8,7 +8,7 @@
 //! - Phase 5: Adaptive Attacks
 
 // Phase 1: Direct Injection Attacks
-// pub mod direct_injection;
+pub mod direct_injection;
 
 // Phase 2: Indirect Injection Attacks
 // pub mod indirect_injection;
@@ -21,3 +21,5 @@
 
 // Phase 5: Adaptive Attacks
 // pub mod adaptive;
+
+pub use direct_injection::{AttackPayload, AttackResult};

@@ -5,8 +5,8 @@
 //! state-of-the-art LLM security attacks.
 
 pub mod metrics;
-// TODO: pub mod dashboard;
-// TODO: pub mod runners;
+pub mod dashboard;
+pub mod runners;
 // TODO: pub mod datasets;
 
 pub use metrics::{
@@ -19,3 +19,6 @@ pub use metrics::{
     calculate_p99_latency, calculate_throughput, calculate_token_overhead,
     LatencyTimer, VaultMetrics, ParserMetrics, VotingMetrics, ComparatorMetrics,
 };
+
+pub use dashboard::{MetricsDashboard, DashboardSummary, VerificationResult};
+pub use runners::{BenchmarkRunner, PhaseConfig, ExecutionSummary};
