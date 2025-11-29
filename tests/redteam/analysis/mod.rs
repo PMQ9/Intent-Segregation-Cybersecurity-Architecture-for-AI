@@ -5,6 +5,10 @@
 //! - Defense Effectiveness analysis
 //! - Report Generation (console, JSON, CSV, HTML)
 
-// pub mod attack_success_rate;
-// pub mod defense_effectiveness;
-// pub mod report_generator;
+pub mod attack_success_rate;
+pub mod defense_effectiveness;
+pub mod report_generator;
+
+pub use attack_success_rate::{AttackSuccessRateAnalysis, AttackRecord};
+pub use defense_effectiveness::{DefenseEffectivenessAnalysis, DefenseLayer, LayerTestResult};
+pub use report_generator::{SecurityReport, PhaseReport, CategoryMetrics, HTMLReportGenerator};

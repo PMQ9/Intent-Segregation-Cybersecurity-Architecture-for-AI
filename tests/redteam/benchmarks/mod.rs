@@ -7,7 +7,7 @@
 pub mod metrics;
 pub mod dashboard;
 pub mod runners;
-// TODO: pub mod datasets;
+pub mod datasets;
 
 pub use metrics::{
     MetricsSnapshot, AggregatedMetrics,
@@ -22,3 +22,7 @@ pub use metrics::{
 
 pub use dashboard::{MetricsDashboard, DashboardSummary, VerificationResult};
 pub use runners::{BenchmarkRunner, PhaseConfig, ExecutionSummary};
+pub use datasets::{
+    BIPIADataset, TaskTrackerDataset, AgentDojoDataset, ASBDataset,
+    BIPIAMetrics, TaskTrackerMetrics, AgentDojoMetrics, ASBMetrics,
+};

@@ -20,7 +20,7 @@ pub mod jailbreaks;
 pub mod consensus_breaking;
 
 // Phase 5: Adaptive Attacks
-// pub mod adaptive;
+pub mod adaptive;
 
 pub use direct_injection::{AttackPayload, AttackResult};
 pub use indirect_injection::{
@@ -37,4 +37,9 @@ pub use consensus_breaking::{
     ConsensusAttackPayload, ConsensusAttackResult,
     ParserSpecificAttack, ParserVariant,
     VotingBypassAttack
+};
+pub use adaptive::{
+    AdaptiveAttackPayload, AdaptiveAttackResult,
+    RLBasedAttack, SearchBasedAttack,
+    DataFlowAttack, CascadeAttack
 };
