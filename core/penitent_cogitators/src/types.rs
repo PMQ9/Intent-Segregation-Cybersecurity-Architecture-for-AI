@@ -72,6 +72,48 @@ pub struct CorruptionConsensus {
     pub combined_analysis: String,
 }
 
+/// Batch diagnostic request - test multiple prompts in single API call
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct BatchDiagnosticTest {
+    /// Diagnostic ID
+    pub diagnostic_id: String,
+
+    /// Prompt to test
+    pub prompt: String,
+}
+
+/// Result of a single diagnostic test within a batch
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct BatchDiagnosticResult {
+    /// Which diagnostic this result is for
+    pub diagnostic_id: String,
+
+    /// Was the input flagged as suspicious
+    pub is_suspicious: bool,
+
+    /// Risk score (0.0 = safe, 1.0 = malicious)
+    pub risk_score: f32,
+
+    /// Attack indicators found
+    pub attack_indicators: Vec<String>,
+
+    /// Brief analysis
+    pub analysis: String,
+}
+
+/// Batch diagnostic response from cogitator
+#[derive(Debug, Clone)]
+pub struct BatchDiagnosticResponse {
+    /// Name of the cogitator
+    pub cogitator_name: String,
+
+    /// Results for each diagnostic
+    pub results: Vec<BatchDiagnosticResult>,
+
+    /// Total time to process batch (ms)
+    pub processing_time_ms: u128,
+}
+
 /// Trait for sacrificial LLM cogitators
 #[async_trait::async_trait]
 pub trait SacrificialCogitator: Send + Sync {
@@ -81,6 +123,37 @@ pub trait SacrificialCogitator: Send + Sync {
         &self,
         user_input: &str,
     ) -> CogitatorResult<CogitatorCorruptionTest>;
+
+    /// Test multiple diagnostics in a single API call (batched for cost optimization)
+    /// This reduces 10 API calls down to 1 call per cogitator
+    async fn test_batch_diagnostics(
+        &self,
+        diagnostics: Vec<BatchDiagnosticTest>,
+    ) -> CogitatorResult<BatchDiagnosticResponse> {
+        // Default implementation: call test_for_corruption for each (will be overridden for efficiency)
+        let mut results = Vec::new();
+        for diagnostic in diagnostics {
+            match self.test_for_corruption(&diagnostic.prompt).await {
+                Ok(result) => {
+                    results.push(BatchDiagnosticResult {
+                        diagnostic_id: diagnostic.diagnostic_id,
+                        is_suspicious: result.is_suspicious,
+                        risk_score: result.risk_score,
+                        attack_indicators: result.attack_indicators,
+                        analysis: result.analysis,
+                    });
+                }
+                Err(e) => {
+                    return Err(e);
+                }
+            }
+        }
+        Ok(BatchDiagnosticResponse {
+            cogitator_name: self.cogitator_name(),
+            results,
+            processing_time_ms: 0,
+        })
+    }
 
     /// Get the cogitator's name
     fn cogitator_name(&self) -> String;

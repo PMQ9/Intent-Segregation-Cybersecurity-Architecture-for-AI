@@ -61,7 +61,7 @@ pub use diagnostics::{DiagnosticCategory, DiagnosticPrompt, SentryHealth, Sentry
 pub use ensemble::PenitentEnsemble;
 pub use health_monitor::{LexicanumDiagnostica, SentryCircuitBreaker};
 pub use types::{
-    CogitatorCorruptionTest, CogitatorError, CogitatorResult, CorruptionConsensus,
-    SacrificialCogitator,
+    BatchDiagnosticResponse, BatchDiagnosticResult, BatchDiagnosticTest, CogitatorCorruptionTest,
+    CogitatorError, CogitatorResult, CorruptionConsensus, SacrificialCogitator,
 };
 pub use vault::{VaultConfig, VaultOfTheForbiddenCant, VaultStatus};

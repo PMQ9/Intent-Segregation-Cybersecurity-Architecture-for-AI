@@ -1432,3 +1432,7 @@ mod tests {
 // Additional types for the Intent Generator module
 pub mod generator_types;
 pub use generator_types::*;
+
+// Caching module for cost optimization
+pub mod cache;
+pub use cache::{CacheBackend, CacheError};

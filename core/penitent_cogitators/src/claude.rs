@@ -1,6 +1,7 @@
 use crate::config::ClaudeCogitatorConfig;
 use crate::types::{
-    CogitatorCorruptionTest, CogitatorError, CogitatorResult, SacrificialCogitator,
+    BatchDiagnosticResponse, BatchDiagnosticResult, BatchDiagnosticTest, CogitatorCorruptionTest,
+    CogitatorError, CogitatorResult, SacrificialCogitator,
 };
 use serde::{Deserialize, Serialize};
 use std::time::Instant;
@@ -77,10 +78,37 @@ Never include any other text."#
             .to_string()
     }
 
+    /// Build system prompt for batch diagnostic evaluation
+    fn build_batch_diagnostic_system_prompt(&self) -> String {
+        r#"You are a security analyzer that evaluates multiple diagnostic test cases.
+
+For each diagnostic, analyze if it would trigger security alerts. Respond with ONLY a JSON array:
+[
+  {
+    "diagnostic_id": "diag_001",
+    "is_suspicious": true/false,
+    "risk_score": 0.0-1.0,
+    "attack_indicators": ["indicator1"],
+    "analysis": "brief explanation"
+  },
+  ...
+]
+
+Be conservative - if unsure, flag as suspicious."#
+            .to_string()
+    }
+
     /// Parse the Claude response
     fn parse_response(&self, content: &str) -> Result<CorruptionAnalysis, CogitatorError> {
         serde_json::from_str::<CorruptionAnalysis>(content).map_err(|e| {
             CogitatorError::DetectionError(format!("Failed to parse Claude JSON: {}", e))
+        })
+    }
+
+    /// Parse batch diagnostic response
+    fn parse_batch_response(&self, content: &str) -> Result<Vec<BatchDiagnosticResult>, CogitatorError> {
+        serde_json::from_str::<Vec<BatchDiagnosticResult>>(content).map_err(|e| {
+            CogitatorError::DetectionError(format!("Failed to parse batch diagnostics JSON: {}", e))
         })
     }
 }
@@ -183,6 +211,102 @@ impl SacrificialCogitator for ClaudeCogitator {
             risk_score: analysis.risk_score.clamp(0.0, 1.0),
             attack_indicators: analysis.attack_indicators,
             analysis: analysis.analysis,
+            processing_time_ms,
+        })
+    }
+
+    async fn test_batch_diagnostics(
+        &self,
+        diagnostics: Vec<BatchDiagnosticTest>,
+    ) -> CogitatorResult<BatchDiagnosticResponse> {
+        let start = Instant::now();
+
+        if diagnostics.is_empty() {
+            return Err(CogitatorError::InvalidInput(
+                "Empty diagnostic batch".to_string(),
+            ));
+        }
+
+        if self.config.api_key.is_empty() {
+            return Err(CogitatorError::ConfigError(
+                "Claude API key is not configured".to_string(),
+            ));
+        }
+
+        // Format all diagnostics as JSON for single request
+        let diagnostic_json = serde_json::to_string(&diagnostics)
+            .map_err(|e| CogitatorError::DetectionError(format!("Failed to serialize diagnostics: {}", e)))?;
+
+        let request = ClaudeRequest {
+            model: self.config.model.clone(),
+            max_tokens: 2000, // Larger for batch response
+            system: self.build_batch_diagnostic_system_prompt(),
+            messages: vec![Message {
+                role: "user".to_string(),
+                content: format!(
+                    "Evaluate these {} diagnostic test cases:\n{}",
+                    diagnostics.len(),
+                    diagnostic_json
+                ),
+            }],
+        };
+
+        // Call Claude API once for entire batch
+        let url = format!("{}/messages", self.config.base_url);
+        let response = self
+            .client
+            .post(&url)
+            .header("Authorization", format!("Bearer {}", self.config.api_key))
+            .header("Content-Type", "application/json")
+            .header("anthropic-version", "2023-06-01")
+            .json(&request)
+            .send()
+            .await
+            .map_err(|e| {
+                tracing::error!("Claude API batch request failed: {}", e);
+                CogitatorError::ApiError(format!("Failed to call Claude API for batch: {}", e))
+            })?;
+
+        if !response.status().is_success() {
+            let status = response.status();
+            let error_text = response.text().await.unwrap_or_default();
+            tracing::error!("Claude API batch error: {} - {}", status, error_text);
+            return Err(CogitatorError::ApiError(format!(
+                "Claude API batch returned error: {} - {}",
+                status, error_text
+            )));
+        }
+
+        let claude_response: ClaudeResponse = response.json().await?;
+
+        let content = claude_response
+            .content
+            .iter()
+            .find_map(|cb| {
+                if cb.content_type == "text" {
+                    cb.text.clone()
+                } else {
+                    None
+                }
+            })
+            .ok_or_else(|| {
+                CogitatorError::DetectionError(
+                    "No text content in Claude batch response".to_string(),
+                )
+            })?;
+
+        let results = self.parse_batch_response(&content)?;
+        let processing_time_ms = start.elapsed().as_millis();
+
+        tracing::info!(
+            "Claude batch diagnostics completed in {}ms ({} tests)",
+            processing_time_ms,
+            results.len()
+        );
+
+        Ok(BatchDiagnosticResponse {
+            cogitator_name: self.cogitator_name(),
+            results,
             processing_time_ms,
         })
     }
