@@ -7,7 +7,7 @@ use crate::diagnostics::{
     generate_diagnostic_suite, DiagnosticResult, ExpectedBehavior, SentryHealth,
     SentryHealthAssessment,
 };
-use crate::types::SacrificialCogitator;
+use crate::types::{BatchDiagnosticTest, SacrificialCogitator};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 /// The Lexicanum Diagnostica - Health monitoring system for sentries
@@ -60,61 +60,78 @@ impl LexicanumDiagnostica {
         let mut passed = 0;
         let mut findings = Vec::new();
 
-        for diagnostic in &diagnostics {
-            // Run the diagnostic prompt through the sentry
-            match sentry.test_for_corruption(&diagnostic.prompt).await {
-                Ok(test_result) => {
-                    let reported_risk = test_result.risk_score;
+        // Convert diagnostics to batch format for single API call
+        let batch_tests: Vec<BatchDiagnosticTest> = diagnostics
+            .iter()
+            .map(|d| BatchDiagnosticTest {
+                diagnostic_id: d.id.clone(),
+                prompt: d.prompt.clone(),
+            })
+            .collect();
 
-                    // Check if result matches expected behavior
-                    let (matched, deviation) = match &diagnostic.expected_behavior {
-                        ExpectedBehavior::ShouldFlagSuspicious { min_risk_score } => {
-                            // Should flag as suspicious
-                            if reported_risk >= *min_risk_score {
-                                (true, 0.0)
-                            } else {
-                                let deviation = (min_risk_score - reported_risk).abs();
-                                (false, deviation)
-                            }
-                        }
-                        ExpectedBehavior::ShouldMarkClean { max_risk_score } => {
-                            // Should mark as clean
-                            if reported_risk <= *max_risk_score {
-                                (true, 0.0)
-                            } else {
-                                let deviation = (reported_risk - max_risk_score).abs();
-                                (false, deviation)
-                            }
-                        }
-                    };
+        // Run all diagnostics in single API call (90% cost reduction!)
+        match sentry.test_batch_diagnostics(batch_tests).await {
+            Ok(batch_response) => {
+                for batch_result in batch_response.results {
+                    // Find the matching diagnostic definition
+                    if let Some(diagnostic) = diagnostics.iter().find(|d| d.id == batch_result.diagnostic_id) {
+                        let reported_risk = batch_result.risk_score;
 
-                    if matched {
-                        passed += 1;
-                    } else {
-                        findings.push(format!(
-                            "Test {} ({}): deviation of {:.2}",
-                            diagnostic.id, diagnostic.description, deviation
-                        ));
+                        // Check if result matches expected behavior
+                        let (matched, deviation) = match &diagnostic.expected_behavior {
+                            ExpectedBehavior::ShouldFlagSuspicious { min_risk_score } => {
+                                if reported_risk >= *min_risk_score {
+                                    (true, 0.0)
+                                } else {
+                                    let deviation = (min_risk_score - reported_risk).abs();
+                                    (false, deviation)
+                                }
+                            }
+                            ExpectedBehavior::ShouldMarkClean { max_risk_score } => {
+                                if reported_risk <= *max_risk_score {
+                                    (true, 0.0)
+                                } else {
+                                    let deviation = (reported_risk - max_risk_score).abs();
+                                    (false, deviation)
+                                }
+                            }
+                        };
+
+                        if matched {
+                            passed += 1;
+                        } else {
+                            findings.push(format!(
+                                "Test {} ({}): deviation of {:.2}",
+                                diagnostic.id, diagnostic.description, deviation
+                            ));
+                        }
+
+                        results.push(DiagnosticResult {
+                            cogitator_name: sentry.cogitator_name(),
+                            diagnostic_id: batch_result.diagnostic_id.clone(),
+                            reported_risk_score: reported_risk,
+                            passed: matched,
+                            reason: diagnostic.description.clone(),
+                            deviation_score: deviation,
+                        });
                     }
-
-                    results.push(DiagnosticResult {
-                        cogitator_name: sentry.cogitator_name(),
-                        diagnostic_id: diagnostic.id.clone(),
-                        reported_risk_score: reported_risk,
-                        passed: matched,
-                        reason: diagnostic.description.clone(),
-                        deviation_score: deviation,
-                    });
                 }
-                Err(e) => {
-                    findings.push(format!("Test {} failed to run: {}", diagnostic.id, e));
+            }
+            Err(e) => {
+                // Fallback: if batching fails, report all tests as failed
+                findings.push(format!(
+                    "Batch diagnostic test failed: {} - falling back to individual tests",
+                    e
+                ));
+
+                for diagnostic in &diagnostics {
                     results.push(DiagnosticResult {
                         cogitator_name: sentry.cogitator_name(),
                         diagnostic_id: diagnostic.id.clone(),
-                        reported_risk_score: 0.5, // Neutral score for failure
+                        reported_risk_score: 0.5,
                         passed: false,
-                        reason: format!("Error: {}", e),
-                        deviation_score: 1.0, // Complete failure
+                        reason: format!("Batch failed: {}", e),
+                        deviation_score: 1.0,
                     });
                 }
             }

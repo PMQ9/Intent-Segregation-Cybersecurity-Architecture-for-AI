@@ -46,6 +46,7 @@
 //! - `DEEPSEEK_API_KEY` or `DEEPSEEK_COGITATOR_API_KEY` - DeepSeek API key
 //! - `CLAUDE_API_KEY` or `CLAUDE_COGITATOR_API_KEY` - Claude API key
 
+pub mod cache_helper;
 pub mod chatgpt;
 pub mod claude;
 pub mod config;
@@ -61,7 +62,7 @@ pub use diagnostics::{DiagnosticCategory, DiagnosticPrompt, SentryHealth, Sentry
 pub use ensemble::PenitentEnsemble;
 pub use health_monitor::{LexicanumDiagnostica, SentryCircuitBreaker};
 pub use types::{
-    CogitatorCorruptionTest, CogitatorError, CogitatorResult, CorruptionConsensus,
-    SacrificialCogitator,
+    BatchDiagnosticResponse, BatchDiagnosticResult, BatchDiagnosticTest, CogitatorCorruptionTest,
+    CogitatorError, CogitatorResult, CorruptionConsensus, SacrificialCogitator,
 };
 pub use vault::{VaultConfig, VaultOfTheForbiddenCant, VaultStatus};
