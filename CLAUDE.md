@@ -16,6 +16,8 @@ Ordo Maledictum Promptorum - A Rust-based security system designed to prevent pr
 
 **NEVER commit changes unless explicitly authorized** - Do not make any git commits without explicit permission from the user. Always ask for permission before committing code changes, even if changes are complete and tested.
 
+**Document Major Blockers in REPORTED_ISSUE.md** - If you encounter a critical blocker or major issue while working, document it VERY BRIEFLY in [REPORTED_ISSUE.md](REPORTED_ISSUE.md) so the user knows what needs fixing next. Format: Issue title, file affected, brief problem description, brief fix summary. Keep it to 2-3 lines per issue.
+
 ## API Usage & Cost Optimization
 
 **CRITICAL: Minimize API calls** - Only make API calls when absolutely necessary. Every API call incurs costs and adds latency to the system.

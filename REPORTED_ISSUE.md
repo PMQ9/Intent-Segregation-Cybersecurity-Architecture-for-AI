@@ -1,81 +1,42 @@
-# API Initialization Issue
+# API Initialization Issue - RESOLVED
 
-**Date**: November 30, 2025
-**Status**: Critical - API fails to start
+**Status**: FIXED - API compiles and starts successfully
 
-## Problem: API Silent Failure on Startup
+## Issues Fixed
 
-**Severity**: CRITICAL
+### 1. Config Mismatch
+**File**: `config/default.toml`
+- Removed obsolete fields: `enable_deterministic`, `enable_ollama`, `ollama_endpoint`, `ollama_model`
+- Added missing: `enable_deepseek`, `enable_claude`, DeepSeek/Claude model config
+- **Fix**: Match TOML structure to Rust struct
 
-**Description**:
-The Intent Segregation API (`intent-api` binary) process exits silently within 1-3 seconds without binding to port 8080 or printing any error messages.
+### 2. Wrong Database Name
+**File**: `config/default.toml`
+- Changed: `intent_db` → `intent_segregation`
 
-**How to Reproduce**:
+### 3. Broken Test
+**File**: `api/src/config.rs` (lines 182-183)
+- Test checked non-existent `enable_deterministic` field
+- **Fix**: Updated assertions to check actual defaults
+
+### 4. Axum 0.7 API
+**File**: `api/src/main.rs`
+- Old: `axum::Server::bind()` (removed in 0.7)
+- **Fix**: Use `let listener = tokio::net::TcpListener::bind()` + `axum::serve(listener, app)`
+
+### 5. Missing Startup Logs
+**File**: `api/src/main.rs`
+- **Fix**: Added `[STARTUP]` and `[FATAL]` stderr logs to show initialization progress
+
+### 6. Unused Imports Cleanup
+- Removed: `PathBuf`, `ServiceBuilder`, `body::Body`, unused parser imports, etc.
+
+## Build Status
+✅ Successfully compiles: `cargo build`
+
+## Test
 ```bash
-# Option 1: Run binary directly
-target\debug\intent-api.exe
-# Exits immediately with no output
-
-# Option 2: Run via cargo
 cargo run --bin intent-api
-# Exits after 2-3 seconds, no output
-
-# Verify failure
-curl http://127.0.0.1:8080/health
-# Connection refused
+# Should print [STARTUP] messages and listen on 0.0.0.0:3000
 ```
-
-**What Should Happen**:
-- Process should print startup messages
-- HTTP server should bind to port 8080
-- `curl http://127.0.0.1:8080/health` should return JSON
-- Process should run until Ctrl+C
-
-**What Actually Happens**:
-- Process exits silently
-- No error messages printed
-- No output to console
-- Port 8080 unbound
-- Database connection likely fails
-
-**Possible Root Causes**:
-1. **Database connection fails** - PostgreSQL pool initialization fails silently
-2. **Config not loading** - Invalid database URL or credentials in `config/default.toml`
-3. **Port binding fails** - Port 3000 or 8080 already in use
-4. **Middleware initialization fails** - CORS or logging setup errors
-
-**Evidence**:
-- PostgreSQL container verified running: `docker ps` shows `intent-postgres`
-- Database responds to direct queries: `docker exec intent-postgres psql -U intent_user -d intent_segregation -c "SELECT 1;"` returns `1`
-- Code compiles successfully with no errors
-- Binary exists at `target/debug/intent-api.exe`
-- No error messages are printed to console
-
-## Fix Required
-
-Add startup logging to `api/src/main.rs` to identify where initialization fails:
-
-```rust
-// After loading config
-eprintln!("[STARTUP] Configuration loaded");
-eprintln!("[STARTUP] Database URL: {}", masked_url);
-
-// Before database connection
-eprintln!("[STARTUP] Creating database connection pool...");
-
-// After database connection
-eprintln!("[STARTUP] Database pool created successfully");
-
-// Before binding listener
-eprintln!("[STARTUP] Binding to 0.0.0.0:8080");
-
-// After binding listener
-eprintln!("[STARTUP] Server listening on 0.0.0.0:8080");
-
-// Add explicit error printing
-.await
-.map_err(|e| eprintln!("[FATAL] {}", e))?
-```
-
-This will reveal which initialization step is failing and why the process exits silently.
 

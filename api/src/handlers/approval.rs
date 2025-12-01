@@ -73,7 +73,7 @@ pub async fn submit_approval_decision(
     );
 
     // Check if pending approval exists
-    let pending = state
+    let _pending = state
         .get_pending_approval(id)
         .await
         .ok_or(AppError::ApprovalNotFound)?;
