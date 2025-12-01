@@ -2,7 +2,6 @@
 
 use config::{Config as ConfigLoader, ConfigError, Environment, File};
 use serde::Deserialize;
-use std::path::PathBuf;
 
 /// Main application configuration
 #[derive(Debug, Clone, Deserialize)]
@@ -179,8 +178,8 @@ allowed_actions = ["find_experts", "summarize"]
         "#;
 
         let config: Config = toml::from_str(config_str).unwrap();
-        assert_eq!(config.parsers.enable_deterministic, true);
-        assert_eq!(config.parsers.openai_model, "gpt-4");
+        assert_eq!(config.parsers.openai_model, "gpt-5-nano");
+        assert_eq!(config.parsers.claude_model, "claude-3-haiku-20240307");
         assert_eq!(config.database.max_connections, 10);
     }
 }

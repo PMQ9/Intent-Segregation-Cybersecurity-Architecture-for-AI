@@ -7,9 +7,9 @@ use axum::{extract::State, Json};
 use intent_ledger::{
     AgreementLevel as LedgerAgreementLevel, ComparatorDecision,
     ComparisonResult as LedgerComparisonResult, ElevationEvent, ElevationStatus, LedgerEntry,
-    ProcessingOutput, VotingResult as LedgerVotingResult,
+    ProcessingOutput,
 };
-use intent_schema::{AgreementLevel, Intent, ParsedIntent};
+use intent_schema::AgreementLevel;
 use malicious_detector::DetectionResult;
 use std::sync::Arc;
 use tracing::{error, info, warn};

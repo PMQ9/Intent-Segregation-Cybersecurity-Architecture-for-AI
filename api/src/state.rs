@@ -5,7 +5,7 @@ use anyhow::Result;
 use intent_comparator::IntentComparator;
 use intent_generator::TrustedIntentGenerator;
 use intent_ledger::IntentLedger;
-use intent_parsers::{ClaudeParser, DeepSeekParser, OpenAIParser, ParserEnsemble};
+use intent_parsers::ParserEnsemble;
 use intent_schema::ProviderConfig;
 use intent_voting::VotingModule;
 use malicious_detector::MaliciousDetector;
