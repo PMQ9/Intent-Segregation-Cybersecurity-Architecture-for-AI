@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Complete Refactoring to Math Tutoring Use Case** (December 2025)
+  - Simplified intent system to support only `math_question` action (removed find_experts, summarize, draft_proposal)
+  - Updated all core modules, tests, documentation, and examples to use math questions throughout
+  - Refactored 60+ files across entire codebase for consistency with math tutoring platform architecture
+  - Updated all red team attack payloads to test math question injection scenarios
+  - All security defenses remain intact with new legitimate intent context
+
 ### Fixed
 - **API Integration Compilation Errors** (November 2025)
   - Fixed all API compilation errors in api/src/handlers/process.rs

@@ -707,14 +707,14 @@ fn test_reject_sql_injection() {
 #[test]
 fn test_action_not_in_whitelist() {
     let config = ProviderConfig {
-        allowed_actions: vec![Action::Summarize],
+        allowed_actions: vec![Action::MathQuestion],
         ..Default::default()
     };
 
     let comparator = IntentComparator::new(config);
 
     let intent = Intent {
-        action: Action::DeleteUser,  // Not in whitelist
+        action: Action::UnknownAction,  // Not in whitelist
         ..Default::default()
     };
 

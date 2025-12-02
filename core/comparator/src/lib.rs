@@ -296,6 +296,7 @@ mod tests {
             allowed_expertise: vec![],
             max_budget: None,
             allowed_domains: vec![],
+            require_human_approval: false,
         }
     }
 

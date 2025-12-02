@@ -50,25 +50,11 @@ pub struct Intent {
 
 // Actions (enum)
 pub enum Action {
-    FindExperts,
-    Summarize,
-    DraftProposal,
-    AnalyzeDocument,
-    GenerateReport,
-    SearchKnowledge,
+    MathQuestion,
 }
 
-// Expertise areas (enum)
-pub enum Expertise {
-    MachineLearning,
-    Embedded,
-    Security,
-    Cloud,
-    Backend,
-    Frontend,
-    DataScience,
-    DevOps,
-}
+// Expertise areas (empty for math tutoring)
+// No expertise filtering needed for math questions
 
 // Constraints
 pub struct Constraint {
@@ -108,13 +94,10 @@ use serde_json::json;
 
 // Create an intent
 let intent = Intent {
-    action: Action::FindExperts,
-    topic: Some("supply chain security".to_string()),
-    expertise: vec![Expertise::Security, Expertise::Cloud],
-    constraints: json!({
-        "max_budget": 50000,
-        "max_results": 10
-    }),
+    action: Action::MathQuestion,
+    topic: Some("algebra".to_string()),
+    expertise: vec![],  // Empty for math questions
+    constraints: json!({}),
     content_refs: vec![],
 };
 
