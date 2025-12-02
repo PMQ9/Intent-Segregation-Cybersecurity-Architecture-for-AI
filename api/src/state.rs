@@ -96,7 +96,10 @@ impl AppState {
 
         // Initialize parser ensemble
         let ensemble = ParserEnsemble::new(parser_config);
-        tracing::info!("Parser ensemble initialized with {} parsers", ensemble.parser_count());
+        tracing::info!(
+            "Parser ensemble initialized with {} parsers",
+            ensemble.parser_count()
+        );
 
         // Initialize voting module
         let voting = VotingModule::new();

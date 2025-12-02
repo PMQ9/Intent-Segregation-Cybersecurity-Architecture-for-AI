@@ -283,11 +283,7 @@ mod tests {
     async fn test_high_confidence_all_agree() {
         let voting = VotingModule::new();
 
-        let intent = create_test_intent(
-            "math_question",
-            "What is 2 + 2?",
-            vec![],
-        );
+        let intent = create_test_intent("math_question", "What is 2 + 2?", vec![]);
 
         let results = vec![
             ParsedIntent {
@@ -317,11 +313,7 @@ mod tests {
     async fn test_low_confidence_minor_differences() {
         let voting = VotingModule::new();
 
-        let intent1 = create_test_intent(
-            "math_question",
-            "What is 2 + 2?",
-            vec![],
-        );
+        let intent1 = create_test_intent("math_question", "What is 2 + 2?", vec![]);
 
         let mut intent2 = intent1.clone();
         intent2.topic_id = "What is 2 + 2 + 2?".to_string();
@@ -354,11 +346,7 @@ mod tests {
     async fn test_conflict_major_differences() {
         let voting = VotingModule::new();
 
-        let intent1 = create_test_intent(
-            "math_question",
-            "What is 2 + 2?",
-            vec![],
-        );
+        let intent1 = create_test_intent("math_question", "What is 2 + 2?", vec![]);
 
         let intent2 = create_test_intent(
             "math_question",
@@ -384,7 +372,9 @@ mod tests {
         // Different math topics should still have some similarity
         assert!(matches!(
             result.agreement_level,
-            AgreementLevel::LowConfidence | AgreementLevel::HighConfidence | AgreementLevel::Conflict
+            AgreementLevel::LowConfidence
+                | AgreementLevel::HighConfidence
+                | AgreementLevel::Conflict
         ));
         // Should still select deterministic parser
         assert_eq!(result.canonical_intent.action, "math_question");
@@ -394,7 +384,11 @@ mod tests {
     async fn test_single_parser() {
         let voting = VotingModule::new();
 
-        let intent = create_test_intent("math_question", "Calculate the area of a circle with radius 5", vec![]);
+        let intent = create_test_intent(
+            "math_question",
+            "Calculate the area of a circle with radius 5",
+            vec![],
+        );
 
         let results = vec![ParsedIntent {
             parser_id: "llm1".to_string(),

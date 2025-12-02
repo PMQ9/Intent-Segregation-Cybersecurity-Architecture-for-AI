@@ -324,9 +324,7 @@ mod tests {
 
     #[test]
     fn test_all_actions() {
-        let actions = vec![
-            Action::MathQuestion,
-        ];
+        let actions = vec![Action::MathQuestion];
 
         for action in actions {
             let json = serde_json::to_string(&action).unwrap();

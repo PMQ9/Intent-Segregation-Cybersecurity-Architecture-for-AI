@@ -16,10 +16,7 @@ fn create_intent(
 ) -> Intent {
     let mut constraints = HashMap::new();
     if let Some(budget) = max_budget {
-        constraints.insert(
-            "max_budget".to_string(),
-            Value::Number(budget.into()),
-        );
+        constraints.insert("max_budget".to_string(), Value::Number(budget.into()));
     }
 
     Intent {
@@ -43,12 +40,7 @@ async fn scenario_1_high_confidence() {
     let voting = VotingModule::new();
 
     // All parsers extract identical math question intent
-    let intent = create_intent(
-        "math_question",
-        "What is 2 + 2?",
-        vec![],
-        None,
-    );
+    let intent = create_intent("math_question", "What is 2 + 2?", vec![], None);
 
     let results = vec![
         ParsedIntent {
@@ -94,12 +86,7 @@ async fn scenario_2_low_confidence() {
     let voting = VotingModule::new();
 
     // Parsers extract slightly different phrasings of the same math question
-    let intent_deterministic = create_intent(
-        "math_question",
-        "What is 2 + 2?",
-        vec![],
-        None,
-    );
+    let intent_deterministic = create_intent("math_question", "What is 2 + 2?", vec![], None);
 
     let intent_llm1 = create_intent(
         "math_question",
@@ -159,12 +146,7 @@ async fn scenario_3_conflict() {
     let voting = VotingModule::new();
 
     // Parsers extract completely different math problems (major conflict)
-    let intent_deterministic = create_intent(
-        "math_question",
-        "What is 2 + 2?",
-        vec![],
-        None,
-    );
+    let intent_deterministic = create_intent("math_question", "What is 2 + 2?", vec![], None);
 
     let intent_llm1 = create_intent(
         "math_question",

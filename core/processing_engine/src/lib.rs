@@ -1,7 +1,5 @@
 use chrono::Utc;
-use intent_schema::{
-    Action, Intent, ProcessingMetadata, ProcessingResult,
-};
+use intent_schema::{Action, Intent, ProcessingMetadata, ProcessingResult};
 use serde_json::json;
 use std::time::Instant;
 use thiserror::Error;

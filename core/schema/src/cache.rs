@@ -158,12 +158,13 @@ pub mod utils {
 
     /// Serialize to JSON bytes
     pub fn serialize<T: serde::Serialize>(value: &T) -> Result<Vec<u8>, super::CacheError> {
-        serde_json::to_vec(value)
-            .map_err(|e| super::CacheError::SerializationError(e.to_string()))
+        serde_json::to_vec(value).map_err(|e| super::CacheError::SerializationError(e.to_string()))
     }
 
     /// Deserialize from JSON bytes
-    pub fn deserialize<T: serde::de::DeserializeOwned>(bytes: Vec<u8>) -> Result<T, super::CacheError> {
+    pub fn deserialize<T: serde::de::DeserializeOwned>(
+        bytes: Vec<u8>,
+    ) -> Result<T, super::CacheError> {
         serde_json::from_slice(&bytes)
             .map_err(|e| super::CacheError::DeserializationError(e.to_string()))
     }

@@ -16,9 +16,7 @@ async fn main() {
 
     // Create a provider configuration for a math tutor service
     let config = ProviderConfig {
-        allowed_actions: vec![
-            "math_question".to_string(),
-        ],
+        allowed_actions: vec!["math_question".to_string()],
         allowed_expertise: vec![],
         max_budget: None,
         allowed_domains: vec![],
@@ -35,10 +33,7 @@ async fn main() {
 
     // Example 1: Valid math question - should be approved
     println!("--- Example 1: Valid Math Question ---");
-    let intent1 = create_intent(
-        "math_question",
-        "What is 2 + 2?",
-    );
+    let intent1 = create_intent("math_question", "What is 2 + 2?");
     check_intent(&comparator, &intent1, &config, 1).await;
 
     // Example 2: Another valid math question
@@ -53,7 +48,10 @@ async fn main() {
 
     // Example 4: Valid calculus question
     println!("\n--- Example 4: Calculus Question ---");
-    let intent4 = create_intent("math_question", "Calculate the derivative of f(x) = x^2 + 3x");
+    let intent4 = create_intent(
+        "math_question",
+        "Calculate the derivative of f(x) = x^2 + 3x",
+    );
     check_intent(&comparator, &intent4, &config, 4).await;
 }
 

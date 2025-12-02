@@ -2,7 +2,7 @@ use crate::cache_helper;
 use crate::config::DeepSeekConfig;
 use crate::types::{IntentParser, ParserError, ParserResult};
 use chrono::Utc;
-use intent_schema::{Intent, IntentMetadata, ParsedIntent, cache::cache_keys};
+use intent_schema::{cache::cache_keys, Intent, IntentMetadata, ParsedIntent};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::time::{Duration, Instant};
