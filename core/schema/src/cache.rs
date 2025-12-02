@@ -191,17 +191,17 @@ mod tests {
     #[test]
     fn test_serialization() {
         let result = CachedParserResult {
-            action: "find_experts".to_string(),
-            topic_id: "topic123".to_string(),
-            expertise_areas: vec!["python".to_string()],
-            max_budget: Some(1000),
-            max_results: Some(10),
+            action: "math_question".to_string(),
+            topic_id: "algebra".to_string(),
+            expertise_areas: vec![],
+            max_budget: None,
+            max_results: None,
             confidence: 0.95,
             parser_name: "Claude".to_string(),
         };
 
         let serialized = utils::serialize(&result).unwrap();
         let deserialized: CachedParserResult = utils::deserialize(serialized).unwrap();
-        assert_eq!(deserialized.action, "find_experts");
+        assert_eq!(deserialized.action, "math_question");
     }
 }
