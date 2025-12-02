@@ -119,50 +119,6 @@ pub enum SchemaError {
     SerializationError(#[from] serde_json::Error),
 }
 
-/// Expert result from find_experts action
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Expert {
-    pub id: String,
-    pub name: String,
-    pub expertise: Vec<String>,
-    pub availability: bool,
-    pub hourly_rate: u64,
-    pub confidence_score: f64,
-    pub bio: Option<String>,
-    pub years_experience: Option<u32>,
-}
-
-/// Document summary result
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct DocumentSummary {
-    pub document_id: String,
-    pub title: String,
-    pub summary: String,
-    pub key_points: Vec<String>,
-    pub word_count: usize,
-    pub confidence: f64,
-    pub generated_at: DateTime<Utc>,
-}
-
-/// Proposal section
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ProposalSection {
-    pub heading: String,
-    pub content: String,
-    pub order: u32,
-}
-
-/// Complete proposal result
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Proposal {
-    pub id: String,
-    pub title: String,
-    pub sections: Vec<ProposalSection>,
-    pub created_at: DateTime<Utc>,
-    pub estimated_budget: Option<u64>,
-    pub timeline_weeks: Option<u32>,
-}
-
 /// Processing metadata
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ProcessingMetadata {
