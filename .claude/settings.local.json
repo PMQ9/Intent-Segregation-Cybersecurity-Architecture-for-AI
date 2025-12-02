@@ -26,7 +26,8 @@
       "Bash(curl:*)",
       "Bash(python:*)",
       "Bash(bash:*)",
-      "Bash(set)"
+      "Bash(set)",
+      "Bash(cargo fmt:*)"
     ],
     "deny": [],
     "ask": []

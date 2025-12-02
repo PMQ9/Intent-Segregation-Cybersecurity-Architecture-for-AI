@@ -15,18 +15,15 @@ pub enum Action {
     MathQuestion,
 }
 
-/// Expertise areas enum
+/// Expertise areas enum (not used for math tutoring platform)
+/// Kept for type compatibility but should always be an empty vector
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash)]
 #[serde(rename_all = "snake_case")]
 pub enum Expertise {
-    MachineLearning,
-    Embedded,
-    Security,
-    Cloud,
-    Backend,
-    Frontend,
-    DevOps,
-    DataScience,
+    // No variants - expertise areas not applicable to math tutoring
+    // This enum is kept for backward compatibility but Vec<Expertise> should always be empty
+    #[serde(skip)]
+    _Unused,
 }
 
 /// Constraints for intent execution
@@ -218,13 +215,11 @@ mod tests {
     }
 
     #[test]
-    fn test_expertise_serialization() {
-        let expertise = Expertise::MachineLearning;
-        let json = serde_json::to_string(&expertise).unwrap();
-        assert_eq!(json, "\"machine_learning\"");
-
-        let deserialized: Expertise = serde_json::from_str(&json).unwrap();
-        assert_eq!(deserialized, Expertise::MachineLearning);
+    fn test_expertise_empty() {
+        // Expertise is not used for math tutoring platform
+        // Vec<Expertise> should always be empty
+        let expertise_list: Vec<Expertise> = vec![];
+        assert!(expertise_list.is_empty());
     }
 
     #[test]
@@ -334,22 +329,18 @@ mod tests {
     }
 
     #[test]
-    fn test_all_expertise() {
-        let expertise_list = vec![
-            Expertise::MachineLearning,
-            Expertise::Embedded,
-            Expertise::Security,
-            Expertise::Cloud,
-            Expertise::Backend,
-            Expertise::Frontend,
-            Expertise::DevOps,
-            Expertise::DataScience,
-        ];
+    fn test_no_expertise_for_math_tutoring() {
+        // Math tutoring platform does not use expertise areas
+        // All intents should have empty expertise vectors
+        let intent = Intent {
+            action: Action::MathQuestion,
+            topic: Some("algebra".to_string()),
+            expertise: vec![], // Always empty for math tutoring
+            constraints: Constraints::default(),
+            content_refs: None,
+            metadata: None,
+        };
 
-        for expertise in expertise_list {
-            let json = serde_json::to_string(&expertise).unwrap();
-            let deserialized: Expertise = serde_json::from_str(&json).unwrap();
-            assert_eq!(expertise, deserialized);
-        }
+        assert!(intent.expertise.is_empty());
     }
 }

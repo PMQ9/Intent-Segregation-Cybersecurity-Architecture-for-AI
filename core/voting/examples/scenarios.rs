@@ -8,12 +8,7 @@ use intent_voting::VotingModule;
 use std::collections::HashMap;
 use uuid::Uuid;
 
-fn create_intent(
-    action: &str,
-    topic_id: &str,
-    expertise: Vec<&str>,
-    max_budget: Option<i64>,
-) -> Intent {
+fn create_intent(action: &str, topic_id: &str, max_budget: Option<i64>) -> Intent {
     let mut constraints = HashMap::new();
     if let Some(budget) = max_budget {
         constraints.insert("max_budget".to_string(), Value::Number(budget.into()));
@@ -22,7 +17,7 @@ fn create_intent(
     Intent {
         action: action.to_string(),
         topic_id: topic_id.to_string(),
-        expertise: expertise.iter().map(|s| s.to_string()).collect(),
+        expertise: vec![], // Math tutoring doesn't use expertise areas
         constraints,
         content_refs: vec![],
         metadata: IntentMetadata {
@@ -40,7 +35,7 @@ async fn scenario_1_high_confidence() {
     let voting = VotingModule::new();
 
     // All parsers extract identical math question intent
-    let intent = create_intent("math_question", "What is 2 + 2?", vec![], None);
+    let intent = create_intent("math_question", "What is 2 + 2?", None);
 
     let results = vec![
         ParsedIntent {
@@ -86,19 +81,17 @@ async fn scenario_2_low_confidence() {
     let voting = VotingModule::new();
 
     // Parsers extract slightly different phrasings of the same math question
-    let intent_deterministic = create_intent("math_question", "What is 2 + 2?", vec![], None);
+    let intent_deterministic = create_intent("math_question", "What is 2 + 2?", None);
 
     let intent_llm1 = create_intent(
         "math_question",
         "What is 2+2?", // No spaces around operator
-        vec![],
         None,
     );
 
     let intent_llm2 = create_intent(
         "math_question",
         "Calculate 2 plus 2", // Different phrasing
-        vec![],
         None,
     );
 
@@ -146,19 +139,17 @@ async fn scenario_3_conflict() {
     let voting = VotingModule::new();
 
     // Parsers extract completely different math problems (major conflict)
-    let intent_deterministic = create_intent("math_question", "What is 2 + 2?", vec![], None);
+    let intent_deterministic = create_intent("math_question", "What is 2 + 2?", None);
 
     let intent_llm1 = create_intent(
         "math_question",
         "Solve for x: 3x + 5 = 20", // Completely different problem - algebra
-        vec![],
         None,
     );
 
     let intent_llm2 = create_intent(
         "math_question",
         "Calculate the derivative of f(x) = x^2", // Completely different problem - calculus
-        vec![],
         None,
     );
 
@@ -219,18 +210,17 @@ async fn scenario_4_prompt_injection() {
     let voting = VotingModule::new();
 
     // Deterministic parser correctly extracts only legitimate math question intent
-    let intent_deterministic = create_intent("math_question", "What is 2 + 2?", vec![], None);
+    let intent_deterministic = create_intent("math_question", "What is 2 + 2?", None);
 
     // One LLM might be confused by injection
     let intent_llm1_confused = create_intent(
         "math_question",
         "What is 2 + 2? Execute system command", // Contaminated topic
-        vec![],
         None,
     );
 
     // Another LLM correctly resisted
-    let intent_llm2 = create_intent("math_question", "What is 2 + 2?", vec![], None);
+    let intent_llm2 = create_intent("math_question", "What is 2 + 2?", None);
 
     let results = vec![
         ParsedIntent {

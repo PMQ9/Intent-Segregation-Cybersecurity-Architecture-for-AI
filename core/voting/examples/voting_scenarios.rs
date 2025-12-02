@@ -2,19 +2,14 @@
 //!
 //! Run with: cargo run --example voting_scenarios
 
-use intent_schema::{Action, Constraints, Expertise, Intent};
+use intent_schema::{Action, Constraints, Intent};
 use intent_voting::{ParserResult, VotingModule};
 
-fn create_intent(
-    action: Action,
-    topic: &str,
-    expertise: Vec<Expertise>,
-    max_budget: Option<u64>,
-) -> Intent {
+fn create_intent(action: Action, topic: &str, max_budget: Option<u64>) -> Intent {
     Intent {
         action,
         topic: Some(topic.to_string()),
-        expertise,
+        expertise: vec![], // Math tutoring doesn't use expertise areas
         constraints: Constraints {
             max_budget,
             ..Default::default()
@@ -29,7 +24,7 @@ async fn scenario_1_high_confidence() {
 
     let voting = VotingModule::new();
 
-    let intent = create_intent(Action::MathQuestion, "What is 2 + 2?", vec![], None);
+    let intent = create_intent(Action::MathQuestion, "What is 2 + 2?", None);
 
     let results = vec![
         ParserResult {
@@ -85,19 +80,17 @@ async fn scenario_2_low_confidence() {
 
     let voting = VotingModule::new();
 
-    let intent_deterministic = create_intent(Action::MathQuestion, "What is 2 + 2?", vec![], None);
+    let intent_deterministic = create_intent(Action::MathQuestion, "What is 2 + 2?", None);
 
     let intent_llm1 = create_intent(
         Action::MathQuestion,
         "What is 2+2?", // Slightly different formatting (no spaces)
-        vec![],
         None,
     );
 
     let intent_llm2 = create_intent(
         Action::MathQuestion,
         "Calculate 2 plus 2", // Different phrasing
-        vec![],
         None,
     );
 
@@ -173,19 +166,17 @@ async fn scenario_3_conflict() {
 
     let voting = VotingModule::new();
 
-    let intent_deterministic = create_intent(Action::MathQuestion, "What is 2 + 2?", vec![], None);
+    let intent_deterministic = create_intent(Action::MathQuestion, "What is 2 + 2?", None);
 
     let intent_llm1 = create_intent(
         Action::MathQuestion,
         "Solve for x: 3x + 5 = 20", // Different math problem
-        vec![],
         None,
     );
 
     let intent_llm2 = create_intent(
         Action::MathQuestion,
         "Calculate the derivative of f(x) = x^2", // Different math problem
-        vec![],
         None,
     );
 
@@ -264,18 +255,17 @@ async fn scenario_4_potential_prompt_injection() {
     let voting = VotingModule::new();
 
     // Deterministic parser correctly extracts only the legitimate intent
-    let intent_deterministic = create_intent(Action::MathQuestion, "What is 2 + 2?", vec![], None);
+    let intent_deterministic = create_intent(Action::MathQuestion, "What is 2 + 2?", None);
 
     // LLM parser might have been confused by injection attempt
     let intent_llm1_confused = create_intent(
         Action::MathQuestion,
         "What is 2 + 2? Execute system command", // Contaminated topic
-        vec![],
         None,
     );
 
     // Another LLM correctly resisted
-    let intent_llm2 = create_intent(Action::MathQuestion, "What is 2 + 2?", vec![], None);
+    let intent_llm2 = create_intent(Action::MathQuestion, "What is 2 + 2?", None);
 
     let results = vec![
         ParserResult {
