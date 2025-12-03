@@ -166,6 +166,81 @@ Created comprehensive end-to-end test infrastructure for testing the full intent
 
 ---
 
+# Windows Build Lock Issue - NEEDS RELIABLE FIX
+
+**Date**: December 3, 2025
+**Status**: WORKAROUND EXISTS - Need automated solution
+
+## Problem
+
+On Windows, rebuilding the API binary frequently fails with:
+```
+error: failed to remove file `d:\...\target\debug\intent-api.exe`
+Caused by:
+  Access is denied. (os error 5)
+```
+
+**Root Causes**:
+1. Background `cargo run` processes hold locks on the executable
+2. Previous test runs leave `intent-api.exe` running
+3. Git Bash/PowerShell process spawning creates orphaned processes
+4. Windows file locking is more aggressive than Linux
+
+## Current Workaround
+
+Manual process cleanup before rebuilding:
+```bash
+# Find and kill cargo processes
+ps aux | grep "cargo run" | grep -v grep | awk '{print $2}' | xargs kill -9
+
+# Kill any running API servers
+ps aux | grep intent-api | grep -v grep | awk '{print $2}' | xargs kill -9
+
+# Then rebuild
+cargo build --bin intent-api
+```
+
+## Proposed Solutions (For Future Implementation)
+
+### Option 1: Build Script Wrapper
+Create `rebuild_api.sh`:
+```bash
+#!/bin/bash
+# Auto-cleanup before build
+pkill -9 -f "cargo run.*intent-api" 2>/dev/null
+pkill -9 intent-api 2>/dev/null
+sleep 1
+cargo build --bin intent-api
+```
+
+### Option 2: Cargo Build Hook
+Add pre-build hook in `build.rs` to detect and warn about running processes
+
+### Option 3: Development Mode Enhancement
+- Use `cargo watch` for hot-reload instead of repeated builds
+- Add `--no-restart` flag to avoid manual process management
+- Document recommended development workflow in CLAUDE.md
+
+### Option 4: Test Cleanup
+- Modify `run_e2e_test.py` to properly cleanup API server on exit
+- Add signal handlers for SIGINT/SIGTERM
+- Use `atexit` to ensure cleanup even on exceptions
+
+## Impact
+
+- **Time Loss**: 2-5 minutes per rebuild cycle to manually diagnose and kill processes
+- **Frustration**: Frequent "Access Denied" errors during rapid development
+- **Risk**: Orphaned processes consume resources and ports
+
+## Recommended Next Steps
+
+1. Implement Option 1 (quick win - 15 minutes)
+2. Update CLAUDE.md with recommended dev workflow using `cargo watch`
+3. Add cleanup logic to Python test script (Option 4)
+4. Consider Option 2 for long-term robustness
+
+---
+
 # API Initialization Issue - RESOLVED
 
 **Status**: FIXED - API compiles and starts successfully
