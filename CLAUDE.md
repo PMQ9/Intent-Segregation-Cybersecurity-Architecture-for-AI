@@ -415,19 +415,74 @@ All modules depend on `intent-schema` for shared types (`Intent`, `Action`, `Exp
 
 ## Configuration
 
-Environment variables are loaded from `.env` (copy `.env.example`):
+**Single Source of Truth Approach** (December 2025):
 
-**Critical settings:**
-- `DATABASE_URL`: PostgreSQL connection
-- `REDIS_HOST`, `REDIS_PORT`: Cache/session storage
-- `ENABLE_OPENAI`, `ENABLE_DEEPSEEK`, `ENABLE_CLAUDE`: Enable/disable LLM parsers
-- `OPENAI_API_KEY`, `OPENAI_MODEL`: OpenAI config (default: gpt-5-nano)
-- `DEEPSEEK_API_KEY`, `DEEPSEEK_MODEL`: DeepSeek config (default: deepseek-chat)
-- `CLAUDE_API_KEY`, `CLAUDE_MODEL`: Claude config (default: claude-3-5-sonnet)
-- `ENABLE_HUMAN_APPROVAL`: Enable supervision module
-- `SMTP_*` / `SLACK_*`: Notification configuration
+The project uses a clear separation between configuration and secrets:
 
-Provider policies are stored in `config/default.toml` and can be loaded at runtime.
+1. **`config/default.toml`** - All application configuration (ports, models, policies)
+   - Checked into git with sensible defaults
+   - No secrets or API keys
+
+2. **`.env`** - API keys and secrets ONLY
+   - NOT checked into git (in `.gitignore`)
+   - Copy from `.env.example` and fill in your keys
+
+3. **`config/local.toml`** (optional) - Local developer overrides
+   - NOT checked into git
+   - Overrides settings from `default.toml`
+
+4. **Environment Variables** (optional) - Runtime overrides
+   - Use `APP__` prefix: `APP__SERVER__PORT=8080`
+   - Use `__` to separate nested keys: `APP__PARSERS__ENABLE_OPENAI=true`
+
+**Setup Instructions:**
+```bash
+# 1. Create .env file with your API keys (it's in .gitignore, won't be committed)
+cat > .env << 'EOF'
+# LLM API Keys (get from provider dashboards)
+CLAUDE_API_KEY=sk-ant-your-key-here
+OPENAI_API_KEY=sk-your-key-here
+DEEPSEEK_API_KEY=sk-your-key-here
+
+# Database credentials
+DATABASE_PASSWORD=intent_pass
+EOF
+
+# 2. config/default.toml already has good defaults, just review it
+# 3. (Optional) Create config/local.toml for personal overrides
+
+# 4. Start the database
+docker-compose up -d postgres redis
+
+# 5. Run the API
+cargo run --bin intent-api
+```
+
+### Key Settings in config/default.toml
+
+**Server Configuration:**
+- `server.port`: HTTP server port (default: 8080)
+- `server.frontend_path`: Path to frontend static files
+- `server.request_timeout_secs`: Request timeout
+
+**Database Configuration:**
+- `database.url`: PostgreSQL connection string
+- `database.max_connections`: Connection pool size
+
+**Parser Configuration:**
+- `parsers.enable_openai`, `enable_deepseek`, `enable_claude`: Enable/disable LLM parsers
+- `parsers.openai_model`, `deepseek_model`, `claude_model`: Model names
+- API keys are loaded from `.env` file (CLAUDE_API_KEY, OPENAI_API_KEY, DEEPSEEK_API_KEY)
+
+**Provider Policy:**
+- `provider.allowed_actions`: List of permitted actions (e.g., ["math_question"])
+- `provider.allowed_expertise`: List of expertise areas (empty = all allowed)
+- `provider.max_results`: Maximum results per request
+- `provider.require_human_approval`: Force human approval for all requests
+
+**Notifications:**
+- `notifications.enable_email`: Enable email notifications
+- SMTP credentials loaded from `.env`
 
 ## Important Constraints
 

@@ -8,11 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
-- **Configuration Consolidation** (December 2025)
-  - Removed config/default.toml from git tracking to eliminate configuration conflicts
-  - All configuration now stored in single .env file (not tracked in git)
-  - Updated .gitignore to prevent tracking of config/*.toml files
-  - Prevents conflicts between multiple configuration sources and ensures single source of truth
+- **Configuration Consolidation - Completed** (December 2, 2025)
+  - **Single Source of Truth**: Clear separation between configuration and secrets
+  - **config/default.toml**: All application config (ports, models, policies) - checked into git, NO secrets
+  - **.env**: API keys and secrets ONLY - NOT in git, minimal file with only secrets
+  - **config/local.toml**: Optional local overrides (gitignored)
+  - Removed 150+ lines of duplicate configuration from .env (reduced from 218 lines to 80 lines)
+  - Removed hardcoded API key from config/default.toml for security
+  - Added dotenvy crate to API for automatic .env loading at startup
+  - Updated CLAUDE.md with clear setup instructions and configuration hierarchy
+  - Environment variable overrides supported via APP__ prefix (e.g., APP__SERVER__PORT=8080)
+  - API keys in .env use both legacy names (CLAUDE_API_KEY) and prefixed names (APP__PARSERS__CLAUDE_API_KEY)
 - **Complete Refactoring to Math Tutoring Use Case** (December 2025)
   - Simplified intent system to support only `math_question` action (removed find_experts, summarize, draft_proposal)
   - Updated all core modules, tests, documentation, and examples to use math questions throughout
