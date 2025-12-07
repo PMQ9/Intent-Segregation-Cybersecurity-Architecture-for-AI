@@ -39,10 +39,11 @@ tmp/
 temp/
 
 # Environment and configuration files
-.env
+#.env
 .env.local
 .env.*.local
-config/*.toml
+#config/*.toml
 !config/*.example.toml
 *.toml.local
 core/notifications/notifications.toml
+nul

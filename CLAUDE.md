@@ -452,10 +452,6 @@ The project uses a clear separation between configuration and secrets:
    - NOT checked into git (in `.gitignore`)
    - Copy from `.env.example` and fill in your keys
 
-3. **`config/local.toml`** (optional) - Local developer overrides
-   - NOT checked into git
-   - Overrides settings from `default.toml`
-
 4. **Environment Variables** (optional) - Runtime overrides
    - Use `APP__` prefix: `APP__SERVER__PORT=8080`
    - Use `__` to separate nested keys: `APP__PARSERS__ENABLE_OPENAI=true`
@@ -474,7 +470,6 @@ DATABASE_PASSWORD=intent_pass
 EOF
 
 # 2. config/default.toml already has good defaults, just review it
-# 3. (Optional) Create config/local.toml for personal overrides
 
 # 4. Start the database
 docker-compose up -d postgres redis
